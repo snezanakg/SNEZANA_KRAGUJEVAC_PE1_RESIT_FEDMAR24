@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Artistry - Discover extraordinary artworks from talented artists around the world">
+  <title>Artistry - Discover Extraordinary Art</title>
+  <link rel="stylesheet" href="../styles/main.css"> 
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-icon">A</div>
+        <span class="nav-logo-text">Artistry</span>
+      </a>
+      <ul class="nav-links">
+        <!-- Navigation will be populated by auth.js -->
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container">
+    <!-- Hero Section -->
+    <section class="hero">
+      <h1>Discover Extraordinary Art</h1>
+      <p>Explore our curated collection of artworks from talented artists around the world</p>
+    </section>
+
+    <!-- Loading State -->
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      <p>Loading artworks...</p>
+    </div>
+
+    <!-- Artworks Grid -->
+    <section id="artwork-grid" class="artwork-grid hidden">
+      <!-- Artwork cards will be inserted here by JavaScript -->
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <script src="../js/data.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/validation.js"></script>
+  <script>
+    // Load and display artworks
+    document.addEventListener('DOMContentLoaded', function() {
+      const loading = document.getElementById('loading');
+      const grid = document.getElementById('artwork-grid');
+      
+      // Simulate API call with setTimeout
+      setTimeout(function() {
+        const artworks = getAllArtworks();
+        
+        // Generate artwork cards
+        let html = '';
+        artworks.forEach(function(artwork) {
+          html += `
+            <article class="card artwork-card">
+              <a href="artwork.html?id=${artwork.id}">
+                <img 
+                  src="${artwork.imageUrl}" 
+                  alt="${artwork.title}"
+                  class="artwork-card-image"
+                  loading="lazy"
+                >
+                <div class="artwork-card-content">
+                  <h3 class="artwork-card-title">${artwork.title}</h3>
+                  <p class="artwork-card-artist">${artwork.artist}</p>
+                  <div class="artwork-card-meta">
+                    <span>${artwork.year}</span>
+                    <span class="artwork-card-medium">${artwork.medium}</span>
+                  </div>
+                </div>
+              </a>
+            </article>
+          `;
+        });
+        
+        grid.innerHTML = html;
+        loading.classList.add('hidden');
+        grid.classList.remove('hidden');
+      }, 800);
+    });
+  </script>
+</body>
+</html>

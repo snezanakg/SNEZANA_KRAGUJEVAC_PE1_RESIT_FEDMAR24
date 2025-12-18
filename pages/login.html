@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Login to your Artistry account">
+  <title>Login - Artistry</title>
+  <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-icon">A</div>
+        <span class="nav-logo-text">Artistry</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Gallery</a></li>
+        <li><a href="register.html" class="btn btn-primary">Register</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-icon">🔐</div>
+        <h2>Welcome Back</h2>
+        <p>Login to manage your artworks</p>
+      </div>
+
+      <!-- Error Message -->
+      <div id="error-message" class="alert alert-error hidden"></div>
+
+      <!-- Login Form -->
+      <form id="login-form" class="form">
+        <div class="form-group">
+          <label for="email" class="form-label">Email Address</label>
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            class="form-input" 
+            placeholder="you@example.com"
+            required
+          >
+          <span class="form-error" id="email-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            class="form-input" 
+            placeholder="Enter your password"
+            required
+          >
+          <span class="form-error" id="password-error"></span>
+          <span class="form-hint">Minimum 6 characters</span>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full" id="submit-btn">
+          Login
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <p>
+          Don't have an account? 
+          <a href="register.html" class="link">Register here</a>
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="../js/data.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/validation.js"></script>
+  <script>
+    // Redirect if already logged in
+    if (isLoggedIn()) {
+      window.location.href = 'index.html';
+    }
+
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+     // Clear previous form errors
+      if (typeof clearFormErrors === 'function') {
+        clearFormErrors();
+      } else if (typeof clearAllErrors === 'function') {
+        clearAllErrors(document.getElementById('login-form'));
+      }
+
+      const formData = {
+        email: document.getElementById('email').value.trim(),
+        password: document.getElementById('password').value
+      };
+      
+      // Basic inline validation (no external dependency required)
+      if (!formData.email || !formData.password) {
+        const errBox = document.getElementById('error-message');
+        errBox.textContent = 'Please enter both email and password.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+      
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Logging in...';
+      
+      // Simulate API call
+      setTimeout(function() {
+        // Store auth token
+        localStorage.setItem('authToken', 'mock-token-12345');
+        localStorage.setItem('userEmail', formData.email);
+        
+        // Redirect to home page
+        window.location.href = 'index.html';
+      }, 1500);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="View artwork details">
+  <title id="page-title">Artwork Details - Artistry</title>
+  <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-icon">A</div>
+        <span class="nav-logo-text">Artistry</span>
+      </a>
+      <ul class="nav-links">
+        <!-- Navigation will be populated by auth.js -->
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container">
+    <a href="index.html" class="back-link">← Back to Gallery</a>
+
+    <!-- Loading State -->
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      <p>Loading artwork...</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="error" class="error-state hidden">
+      <p>Artwork not found</p>
+      <a href="index.html" class="btn btn-primary">Return to Gallery</a>
+    </div>
+
+    <!-- Artwork Detail -->
+    <div id="artwork-detail" class="artwork-detail hidden">
+      <!-- Content will be inserted by JavaScript -->
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="../js/data.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/validation.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const artworkId = urlParams.get('id');
+      
+      const loading = document.getElementById('loading');
+      const error = document.getElementById('error');
+      const detailContainer = document.getElementById('artwork-detail');
+      
+      if (!artworkId) {
+        loading.classList.add('hidden');
+        error.classList.remove('hidden');
+        return;
+      }
+      
+      // Simulate API call
+      setTimeout(function() {
+        const artwork = getArtworkById(artworkId);
+        
+        if (!artwork) {
+          loading.classList.add('hidden');
+          error.classList.remove('hidden');
+          return;
+        }
+        
+        // Update page title
+        document.getElementById('page-title').textContent = artwork.title + ' - Artistry';
+        
+      
+       // Check if user is logged in
+const loggedIn = isLoggedIn();
+
+        // Generate detail HTML
+        const html = `
+          <div class="artwork-detail-grid">
+            <div class="artwork-detail-image">
+              <img src="${artwork.imageUrl}" alt="${artwork.title}">
+            </div>
+            
+            <div class="artwork-detail-content">
+              <div class="artwork-detail-header">
+                <h1>${artwork.title}</h1>
+                <p class="artwork-detail-artist">${artwork.artist}</p>
+              </div>
+              
+              <div class="artwork-detail-meta">
+                <div class="meta-item">
+                  <span class="meta-icon">📅</span>
+                  <span>${artwork.year}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-icon">🎨</span>
+                  <span>${artwork.medium}</span>
+                </div>
+                ${artwork.location ? `
+                  <div class="meta-item">
+                    <span class="meta-icon">📍</span>
+                    <span>${artwork.location}</span>
+                  </div>
+                ` : ''}
+              </div>
+              
+              <div class="artwork-detail-description">
+                <h3>About this artwork</h3>
+                <p>${artwork.description}</p>
+              </div>
+              
+              ${isLoggedIn ? `
+                <div class="artwork-detail-actions">
+                  <a href="edit.html?id=${artwork.id}" class="btn btn-primary">
+                    ✏️ Edit Artwork
+                  </a>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+        
+        detailContainer.innerHTML = html;
+        loading.classList.add('hidden');
+        detailContainer.classList.remove('hidden');
+      }, 600);
+    });
+  </script>
+</body>
+</html>

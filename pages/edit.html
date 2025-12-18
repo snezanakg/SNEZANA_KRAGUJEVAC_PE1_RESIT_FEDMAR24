@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Edit artwork details">
+  <title>Edit Artwork - Artistry</title>
+  <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-icon">A</div>
+        <span class="nav-logo-text">Artistry</span>
+      </a>
+      <ul class="nav-links">
+        <!-- Navigation will be populated by auth.js -->
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container-small">
+    <a href="#" id="back-link" class="back-link">← Back to Artwork</a>
+
+    <div class="form-container">
+      <div class="form-header-flex">
+        <div>
+          <h1>Edit Artwork</h1>
+          <p>Update the artwork details below</p>
+        </div>
+        <button type="button" class="btn btn-danger" id="delete-btn">
+          🗑️ Delete
+        </button>
+      </div>
+
+      <!-- Success Message -->
+      <div id="success-message" class="alert alert-success hidden">
+        ✓ Artwork updated successfully! Redirecting...
+      </div>
+
+      <!-- Loading State -->
+      <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p>Loading artwork...</p>
+      </div>
+
+      <!-- Edit Form -->
+      <form id="edit-form" class="form hidden">
+        <div class="form-group">
+          <label for="title" class="form-label">Title *</label>
+          <input 
+            type="text" 
+            id="title" 
+            name="title" 
+            class="form-input"
+            required
+          >
+          <span class="form-error" id="title-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="artist" class="form-label">Artist *</label>
+          <input 
+            type="text" 
+            id="artist" 
+            name="artist" 
+            class="form-input"
+            required
+          >
+          <span class="form-error" id="artist-error"></span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="year" class="form-label">Year *</label>
+            <input 
+              type="number" 
+              id="year" 
+              name="year" 
+              class="form-input"
+              min="1000"
+              max="2025"
+              required
+            >
+            <span class="form-error" id="year-error"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="medium" class="form-label">Medium *</label>
+            <select id="medium" name="medium" class="form-input" required>
+              <option value="Oil on Canvas">Oil on Canvas</option>
+              <option value="Acrylic">Acrylic</option>
+              <option value="Watercolor">Watercolor</option>
+              <option value="Digital Art">Digital Art</option>
+              <option value="Mixed Media">Mixed Media</option>
+              <option value="Sculpture">Sculpture</option>
+              <option value="Photography">Photography</option>
+              <option value="Spray Paint">Spray Paint</option>
+            </select>
+            <span class="form-error" id="medium-error"></span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="location" class="form-label">Location</label>
+          <input 
+            type="text" 
+            id="location" 
+            name="location" 
+            class="form-input"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="imageUrl" class="form-label">Image URL *</label>
+          <input 
+            type="url" 
+            id="imageUrl" 
+            name="imageUrl" 
+            class="form-input"
+            required
+          >
+          <span class="form-error" id="imageUrl-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="description" class="form-label">Description *</label>
+          <textarea 
+            id="description" 
+            name="description" 
+            class="form-input form-textarea" 
+            rows="5"
+            required
+          ></textarea>
+          <span class="form-error" id="description-error"></span>
+          <span class="form-hint">Minimum 20 characters</span>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="submit-btn">
+            Update Artwork
+          </button>
+          <a href="#" id="cancel-link" class="btn btn-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="delete-modal" class="modal hidden">
+    <div class="modal-content">
+      <h3 class="modal-title">🗑️ Delete Artwork</h3>
+      <p class="modal-text">Are you sure you want to delete this artwork? This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-danger" id="confirm-delete">Delete</button>
+        <button type="button" class="btn btn-secondary" id="cancel-delete">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../js/data.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/validation.js"></script>
+  <script>
+    // Protect this page - require login
+    if (!isUserLoggedIn()) {
+      window.location.href = 'login.html';
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const artworkId = urlParams.get('id');
+
+    if (!artworkId) {
+      window.location.href = 'index.html';
+    }
+
+    // Update back links
+    document.getElementById('back-link').href = 'artwork.html?id=' + artworkId;
+    document.getElementById('cancel-link').href = 'artwork.html?id=' + artworkId;
+
+    // Load artwork data
+    setTimeout(function() {
+      const artwork = getArtworkById(artworkId);
+      
+      if (!artwork) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      // Populate form
+      document.getElementById('title').value = artwork.title;
+      document.getElementById('artist').value = artwork.artist;
+      document.getElementById('year').value = artwork.year;
+      document.getElementById('medium').value = artwork.medium;
+      document.getElementById('location').value = artwork.location || '';
+      document.getElementById('imageUrl').value = artwork.imageUrl;
+      document.getElementById('description').value = artwork.description;
+
+      // Show form
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('edit-form').classList.remove('hidden');
+    }, 600);
+
+    // Handle form submission
+    document.getElementById('edit-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      clearFormErrors();
+      
+      const formData = {
+        title: document.getElementById('title').value.trim(),
+        artist: document.getElementById('artist').value.trim(),
+        year: document.getElementById('year').value,
+        medium: document.getElementById('medium').value,
+        location: document.getElementById('location').value.trim(),
+        imageUrl: document.getElementById('imageUrl').value.trim(),
+        description: document.getElementById('description').value.trim()
+      };
+      
+      const errors = validateArtworkForm(formData);
+      
+      if (Object.keys(errors).length > 0) {
+        displayFormErrors(errors);
+        return;
+      }
+      
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Updating...';
+      
+      setTimeout(function() {
+        // Update the artwork in localStorage
+        updateArtwork(artworkId, formData);
+        
+        document.getElementById('success-message').classList.remove('hidden');
+        
+        setTimeout(function() {
+          window.location.href = 'artwork.html?id=' + artworkId;
+        }, 2000);
+      }, 1500);
+    });
+
+    // Handle delete button
+    document.getElementById('delete-btn').addEventListener('click', function() {
+      document.getElementById('delete-modal').classList.remove('hidden');
+    });
+
+    document.getElementById('cancel-delete').addEventListener('click', function() {
+      document.getElementById('delete-modal').classList.add('hidden');
+    });
+
+    document.getElementById('confirm-delete').addEventListener('click', function() {
+      // Delete the artwork from localStorage
+      deleteArtwork(artworkId);
+      
+      setTimeout(function() {
+        window.location.href = 'index.html';
+      }, 1000);
+    });
+  </script>
+</body>
+</html>

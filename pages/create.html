@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Add a new artwork to the gallery">
+  <title>Create Artwork - Artistry</title>
+  <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-icon">A</div>
+        <span class="nav-logo-text">Artistry</span>
+      </a>
+      <ul class="nav-links">
+        <!-- Navigation will be populated by auth.js -->
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container-small">
+    <a href="index.html" class="back-link">← Back to Gallery</a>
+
+    <div class="form-container">
+      <div class="form-header">
+        <h1>Add New Artwork</h1>
+        <p>Fill in the details to add a new artwork to the gallery</p>
+      </div>
+
+      <!-- Success Message -->
+      <div id="success-message" class="alert alert-success hidden">
+        ✓ Artwork created successfully! Redirecting...
+      </div>
+
+      <!-- Error Message -->
+      <div id="error-message" class="alert alert-error hidden"></div>
+
+      <!-- Create Form -->
+      <form id="create-form" class="form">
+        <div class="form-group">
+          <label for="title" class="form-label">Title *</label>
+          <input 
+            type="text" 
+            id="title" 
+            name="title" 
+            class="form-input" 
+            placeholder="Enter artwork title"
+            required
+          >
+          <span class="form-error" id="title-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="artist" class="form-label">Artist *</label>
+          <input 
+            type="text" 
+            id="artist" 
+            name="artist" 
+            class="form-input" 
+            placeholder="Enter artist name"
+            required
+          >
+          <span class="form-error" id="artist-error"></span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="year" class="form-label">Year *</label>
+            <input 
+              type="number" 
+              id="year" 
+              name="year" 
+              class="form-input" 
+              placeholder="e.g., 2024"
+              min="1000"
+              max="2025"
+              required
+            >
+            <span class="form-error" id="year-error"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="medium" class="form-label">Medium *</label>
+            <select id="medium" name="medium" class="form-input" required>
+              <option value="">Select medium</option>
+              <option value="Oil on Canvas">Oil on Canvas</option>
+              <option value="Acrylic">Acrylic</option>
+              <option value="Watercolor">Watercolor</option>
+              <option value="Digital Art">Digital Art</option>
+              <option value="Mixed Media">Mixed Media</option>
+              <option value="Sculpture">Sculpture</option>
+              <option value="Photography">Photography</option>
+              <option value="Spray Paint">Spray Paint</option>
+            </select>
+            <span class="form-error" id="medium-error"></span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="location" class="form-label">Location</label>
+          <input 
+            type="text" 
+            id="location" 
+            name="location" 
+            class="form-input" 
+            placeholder="e.g., Museum of Modern Art, NYC"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="imageUrl" class="form-label">Image URL *</label>
+          <input 
+            type="url" 
+            id="imageUrl" 
+            name="imageUrl" 
+            class="form-input" 
+            placeholder="https://example.com/image.jpg"
+            required
+          >
+          <span class="form-error" id="imageUrl-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="description" class="form-label">Description *</label>
+          <textarea 
+            id="description" 
+            name="description" 
+            class="form-input form-textarea" 
+            rows="5"
+            placeholder="Describe the artwork..."
+            required
+          ></textarea>
+          <span class="form-error" id="description-error"></span>
+          <span class="form-hint">Minimum 20 characters</span>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="submit-btn">
+            Create Artwork
+          </button>
+          <a href="index.html" class="btn btn-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="../js/data.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/validation.js"></script>
+  <script>
+    // Protect this page - require login
+    if (!isUserLoggedIn()) {
+      window.location.href = 'login.html';
+    }
+
+    document.getElementById('create-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Clear previous errors
+      clearFormErrors();
+      
+      // Get form data
+      const formData = {
+        title: document.getElementById('title').value.trim(),
+        artist: document.getElementById('artist').value.trim(),
+        year: document.getElementById('year').value,
+        medium: document.getElementById('medium').value,
+        location: document.getElementById('location').value.trim(),
+        imageUrl: document.getElementById('imageUrl').value.trim(),
+        description: document.getElementById('description').value.trim()
+      };
+      
+      // Validate form
+      const errors = validateArtworkForm(formData);
+      
+      if (Object.keys(errors).length > 0) {
+        displayFormErrors(errors);
+        return;
+      }
+      
+      // Disable submit button
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Creating...';
+      
+      // Simulate API call - SAVE TO LOCALSTORAGE
+      setTimeout(function() {
+        // Create the artwork and save it
+        createArtwork(formData);
+        
+        // Show success message
+        document.getElementById('success-message').classList.remove('hidden');
+        
+        // Redirect after 2 seconds
+        setTimeout(function() {
+          window.location.href = 'index.html';
+        }, 2000);
+      }, 1500);
+    });
+  </script>
+</body>
+</html>
